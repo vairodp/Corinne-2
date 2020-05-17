@@ -1,0 +1,16 @@
+digraph c1c2_product {
+	s0 [label="" height=0 shape=none width=0]
+	s0 -> "0,0"
+	"1,1" -> "2,1" [label="A->B:m"]
+	"1,1" -> "1,0" [label="K->C:toc"]
+	"1,0" -> "2,0" [label="A->B:m"]
+	"1,0" -> "1,1" [label="C->K:tic"]
+	"0,1" -> "1,1" [label="H->A:tic"]
+	"0,1" -> "0,0" [label="K->C:toc"]
+	"0,0" -> "1,0" [label="H->A:tic"]
+	"0,0" -> "0,1" [label="C->K:tic"]
+	"2,1" -> "0,1" [label="A->H:toc"]
+	"2,1" -> "2,0" [label="K->C:toc"]
+	"2,0" -> "0,0" [label="A->H:toc"]
+	"2,0" -> "2,1" [label="C->K:tic"]
+}

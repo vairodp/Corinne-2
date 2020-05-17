@@ -1,0 +1,7 @@
+digraph c1c2_sync {
+	s0 [label="" height=0 shape=none width=0]
+	s0 -> "0,0"
+	"1,1" -> "2,1" [label="A->B:m"]
+	"0,0" -> "1,1" [label="C->A:tic"]
+	"2,1" -> "0,0" [label="A->C:toc"]
+}

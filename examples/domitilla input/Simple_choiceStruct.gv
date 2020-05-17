@@ -1,0 +1,19 @@
+digraph Simple_choiceStruct {
+	0 [label="" shape=circle]
+	0 -> 1
+	1 [label="+" shape=diamond]
+	1 -> 3
+	1 -> 5
+	2 [label="+" shape=diamond]
+	2 -> 7
+	3 [label="K -> B : m" shape=rect]
+	3 -> 4
+	4 [label="K -> C : n" shape=rect]
+	4 -> 2
+	5 [label="K -> C : n" shape=rect]
+	5 -> 6
+	6 [label="K -> B : m" shape=rect]
+	6 -> 2
+	7 [label="" shape=doublecircle]
+	7 [label="" shape=doublecircle]
+}
