@@ -119,7 +119,7 @@ class MyGui(ttk.Frame):
         menu_frame.grid_columnconfigure(0, weight=1)
         menu_frame.grid_columnconfigure(1,weight=1)
 
-        tab_frame = Frame(master,pady=30)
+        tab_frame = Frame(master,pady=15)
         tab_frame.grid(row=1, column=0, sticky=(tk.N, tk.S, tk.E, tk.W))
         tab_frame.configure(bg=self.COLOR_frames)
         tab_frame.grid_columnconfigure(0, weight=1)
@@ -349,8 +349,6 @@ class MyGui(ttk.Frame):
         self.tabs.grid(row=0, column=0, sticky=(tk.N, tk.S, tk.E, tk.W), padx=10, pady=5)
         frame = ttk.Frame(self.tabs)
         frame.grid_columnconfigure(4, weight=1)
-        #frame.grid_columnconfigure(0, weight=2)
-        #frame.grid_rowconfigure(1, weight=2)
 
         # Add the tab
         self.tabs.add(frame, text=graph_name)
