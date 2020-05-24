@@ -7,7 +7,6 @@ from PIL import ImageTk,Image
 import pickle
 
 
-
 class MyGui(ttk.Frame):
     controller = None
     tabs = None
