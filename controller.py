@@ -210,7 +210,7 @@ class Controller:
         # parser the product graph and
         # store the relative CA
         result = self.DOTparser(path_to_store)
-        return ["[CREATED] " + path_to_store], result[2]
+        return ["[CREATED] " + path_to_store]
     
     def projection(self, graph_name, participant, path_to_store):
         """

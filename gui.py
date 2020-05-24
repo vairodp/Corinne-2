@@ -345,6 +345,7 @@ class MyGui(ttk.Frame):
         proj_button.grid(row=4, column=0)
     
     def __add_new_tab__(self, graph_name,v_path):
+        
         self.tabs.grid(row=0, column=0, sticky=(tk.N, tk.S, tk.E, tk.W), padx=10, pady=5)
         frame = ttk.Frame(self.tabs)
         frame.grid_columnconfigure(4, weight=1)
@@ -381,10 +382,13 @@ class MyGui(ttk.Frame):
         
         elements_l = list(self.controller.get_labels(graph_name))
         option_l = tk.StringVar()
-        option_l.set(elements_l[0])
+        if not elements_l:
+            print("lista vuota")
+        else:
+            option_l.set(elements_l[0])
 
-        label_menu = ttk.OptionMenu(frame, option_l, elements_l[0], *elements_l)
-        label_menu.grid(row=3, column=2, pady=10, padx=20)
+            label_menu = ttk.OptionMenu(frame, option_l, elements_l[0], *elements_l)
+            label_menu.grid(row=3, column=2, pady=10, padx=20)
 
         entry_l = tk.Label(frame, text = len(elements_l), wraplength=500, bg=self.COLOR_frames, fg=self.COLOR_foreground)
         entry_l.grid(row=3, column=1, pady=10, padx=20)
@@ -394,10 +398,13 @@ class MyGui(ttk.Frame):
 
         elements_p = list(self.controller.get_participants(graph_name))
         option_p = tk.StringVar()
-        option_p.set(elements_p[0])
+        if not elements_p:
+            print("seconda lista vuota")
+        else:
+            option_p.set(elements_p[0])
 
-        part_menu = ttk.OptionMenu(frame, option_p, elements_p[0], *elements_p)
-        part_menu.grid(row=4, column=2, pady=10, padx=20)
+            part_menu = ttk.OptionMenu(frame, option_p, elements_p[0], *elements_p)
+            part_menu.grid(row=4, column=2, pady=10, padx=20)
 
         entry_p = tk.Label(frame, text=len(elements_p), wraplength=500, bg=self.COLOR_frames, fg=self.COLOR_foreground)
         entry_p.grid(row=4, column=1, pady=10, padx=20)
@@ -409,7 +416,7 @@ class MyGui(ttk.Frame):
         img = ImageTk.PhotoImage(image)
         labelprova = tk.Label(frame,image=img)
         labelprova.photo=img
-        labelprova.grid(row=0,column=3,rowspan=5,padx=10,pady=10,sticky=tk.W) 
+        labelprova.grid(row=0,column=3,rowspan=5,padx=(200,0),pady=10) 
 
 		# create close button
         close_button = Button(frame, text='X', bg=self.COLOR_frames, highlightthickness=0, borderwidth=0, command=lambda: (
