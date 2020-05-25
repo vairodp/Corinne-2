@@ -16,6 +16,7 @@ _Corinne is a tool to manage Choreography Automata (CA)._
 - [Graphviz](https://www.graphviz.org/download/) (0.10.1)
 - [graphviz-python3-package](https://pypi.org/project/graphviz/) (0.13.2)
 - [antlr4-python3-runtime](https://pypi.org/project/antlr4-python3-runtime/) (4.7.2)
+- [PIL](https://pypi.org/project/Pillow/) (7.1.2)
 
 ### Running
 
@@ -33,7 +34,7 @@ python3 main.py
 
 For more details about the CA syntax see [DOT.g4](dot_parser/DOT.g4) file.
 
-- RENDER: render a given DOT (.gv) file in PNG or PDF format.
+- RENDER: render a given DOT (.gv) file in PNG or PDF format. (coming soon under the image rendering)
 
 Once taken one or more files as input, Corinne can apply some functions on it:
 
