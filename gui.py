@@ -416,7 +416,7 @@ class MyGui(ttk.Frame):
         img = ImageTk.PhotoImage(image)
         labelprova = tk.Label(frame,image=img)
         labelprova.photo=img
-        labelprova.grid(row=0,column=3,rowspan=5,padx=(200,0),pady=10) 
+        labelprova.grid(row=0,column=3,rowspan=5,padx=(150,0),pady=10) 
 
 		# create close button
         close_button = Button(frame, text='X', bg=self.COLOR_frames, highlightthickness=0, borderwidth=0, command=lambda: (

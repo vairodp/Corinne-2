@@ -38,15 +38,19 @@ class FSA(ABC):
         reachable nodes, starting from the given
         node and with only the given label moves.
         """
+        print("SELF:::")
+        print(self.edges)
         result = set()
         for edge in self.edges:
+            print("DENTRO AL FOR IMPORTANTE")
             if edge[0] == node and edge[1] == label:
+                print("DENTRO AL IF IMPORTANTE")
                 result.add(edge[2])
         return result
     
     def delete_epsilon_moves(self):
         """ delete epsilon (empty) moves from the FSA """
-        
+        print("parte1")
         # Take ∈-closure of the start node as beginning state
         start_node = self.__e_closure__(self.s0)
         # a stack through iterate
@@ -63,30 +67,39 @@ class FSA(ABC):
         final_edges = []
         
         while len(stack_nodes) > 0:
+            print("dentro il while")
             current_node = stack_nodes.pop()
             # find ID of the node
             id_node = ""
             for key, value in final_states.items():
+                print("dentro il primo for")
                 if value == current_node:
                     id_node = str(key)
             
             for label in self.labels:
+                print("dentro il secondo for")
                 new_node = set()
                 for node in current_node:
+                    print("dentro il terzo for")
                     # find the set of nodes reachable from node with label
                     label_closure = self.__label_closure__(node, label)
+                    print(label_closure)
                     # now from this set, find a set of nodes reachable with
                     # epsilon moves (e-closure)
                     if len(label_closure):
+                        print("dentro il primo if")
                         new_node = new_node.union(self.__e_closure__(label_closure))
                 if len(new_node):
+                    print("dentro il secondo if")
                     sender, receiver, message = self.__get_participants_and_message_from_label__(label)
                     if not new_node in final_states.values():
+                        print("dentro il terzo if")
                         count += 1
                         final_states[count] = new_node
                         stack_nodes.append(new_node)
                         final_edges.append((id_node, label, str(count), sender, receiver, message))
                     else:
+                        print("dentro il 4 if")
                         for k, value in final_states.items():
                             if value == new_node:
                                 final_edges.append((id_node, label, str(k), sender, receiver, message))

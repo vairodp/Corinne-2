@@ -123,15 +123,15 @@ class Controller:
         for i in ca1.states:
             for j in ca2.states:
                 # current node we re considering
-                node = str(i) + ',' + str(j)
+                node = i + ',' + j
                 # set j, and look for some edges from i to other nodes
                 for edge in ca1.edges:
                     if edge[0] == i:
-                        g.edge(node, str(edge[2]) + ',' + str(j), label=str(edge[1]))
+                        g.edge(node, edge[2] + ',' + j, label=edge[1])
                 # set i, and look for some edges from j to other nodes
                 for edge in ca2.edges:
                     if edge[0] == j:
-                        g.edge(node, str(i) + ',' + str(edge[2]), label=str(edge[1]))
+                        g.edge(node, i + ',' + edge[2], label=edge[1])
         # draw and save the graph
         g.save(path_to_store)
         # parser the product graph and
@@ -233,6 +233,8 @@ class Controller:
         # (source_node, label, dest_node, sender, receiver, message)
         new_edges = set()
         new_labels = set()
+        print("CA")
+        print(ca.edges)
         for edge in ca.edges:
             # if the participant is the sender
             if edge[3] == participant:
@@ -247,12 +249,22 @@ class Controller:
             # in all the other cases, empty_label edges
             else:
                 new_edges.add((edge[0], "", edge[2]))
-        
+        print("new_edges")
+        print(new_edges)
         c = CFSM(ca.states, new_labels, new_edges, ca.s0, ca.participants)
-        c.delete_epsilon_moves()
-        c.minimization()
+        print("CA pria di fare mosse strane?")
+        print(c.edges)
         
+        c.delete_epsilon_moves()
+        print("CA dopo delete epsilon moves")
+        print(c.edges)
+        c.minimization()
+
+        print("ok")
+        print(c.edges)
         for edge in c.edges:
+            print("edgee")
+            print(edge)
             g.edge(str(edge[0]), str(edge[2]), label=edge[1])
         # draw and save the graph
         g.save(path_to_store)
