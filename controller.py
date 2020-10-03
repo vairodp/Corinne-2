@@ -7,6 +7,8 @@ from dot_parser.domitilla_converter import domitilla_converter
 from dot_parser.MyErrorListener import parseError
 from dot_parser.MyVisitor import ForkStatementDetected
 
+import itertools
+
 
 class Controller:
     ca_dict = {}
@@ -270,3 +272,307 @@ class Controller:
         g.save(path_to_store)
         
         return ["[CREATED] " + path_to_store]
+
+
+    def check_q_branch(self,array):
+
+        for i in array:
+            if array.count(i) == 3:
+                return False
+
+        return True
+
+
+    def search(self,i, arr,insieme1,corse):
+
+        if (i == None):
+
+            for j in insieme1:
+
+                #corse.append([j[0],[j[1]]])
+
+                #print(str(j[0])+"-->"+str(j[2]))
+
+                arr = [j[0],j[2]]
+
+                corse.append(arr)
+
+                self.search(j[2],arr,insieme1,corse)
+
+        else:
+
+            for j in insieme1:
+
+                if i == j[0]:
+
+                    io = []
+
+                    for ite in arr:
+                        io.append(ite)
+
+                    io.append(j[2])
+
+                    if self.check_q_branch(io):
+
+                        #print(*dio)
+
+                        corse.append(io)
+
+                        self.search(j[2],io,insieme1,corse)
+
+
+    def ritornatuttecorse(self,insieme):
+
+        corse = []
+
+        self.search(None,None,insieme,corse)
+
+        #print(*corse)
+
+        return corse
+
+    def returnedge(self,s1,s2,edges):
+        for e in edges:
+            if e[0] == s1 and e[2] == s2:
+                return e
+
+    def first_qspan_condition(self,al,be):
+
+        alpha = al
+        beta = be
+
+        if alpha[0] == beta[0] and alpha[-1] == beta[-1]:
+
+            alpha.pop(0)
+            beta.pop(0)
+            alpha.pop(-1)
+            beta.pop(-1)
+
+            if not (any(x in alpha for x in beta)):
+                return True
+        return False
+
+
+    def second_qspan_condition(self,alpha,beta):
+        return False
+
+    def third_qspan_condition(self,alpha,beta):
+        return False
+
+
+
+    def q_span(self,corse):
+
+        qspans = []
+
+        for i in corse:
+            for j in corse:
+                if i != j:
+                    if first_qspan_condition(i,j) or second_qspan_condition(i,j) or third_qspan_condition(i,j):
+
+                        qspans.append([i,j])
+
+        return qspans
+
+
+    def check_choosers(self,alpha,beta,edges):
+
+        for edge1 in edges:
+                if edges1[0] == alpha[0] and edges1[2] == alpha[1]:
+                    for edge2 in edges:
+                        if edges2[0] == beta[0] and edges2[1] == beta[1]:
+                            if edges1[3] == edges2[3]:
+                                return True
+
+        return False
+
+
+    #Completed
+    def well_branchedness_first_condition(self,edges,states):
+
+        for i in states:
+
+            senders = []
+            receivers = []
+
+            for j in edges:
+
+                if j[0] == i:
+
+                    senders.append(j[3])
+                    receivers.append(j[4])
+
+                    if j[4] in senders:
+
+                       return ("participant "+str(j[4]+" is a sender and also a receiver in transitions from "+j[0]))
+
+                    if j[3] in receivers:
+
+                        return ("participant "+str(j[3]+" is a sender and also a receiver in transitions from "+j[0]))
+
+        return None
+
+    #Completed
+    def well_branchedness_second_condition(self,edges,states,participants):
+
+        for s in states:
+            for a in participants:
+
+                for i in edges:
+                    if i[3] == a:
+                        for j in edges:
+                            if i[0] == j[0] and i[3] != j[3]:
+
+
+                                for x in edges:
+                                    for y in edges:
+
+                                        if x[0] == i [2] and y[0] == j:
+                                            if x[2] == y[2] and x[1] == j[1] and y[1] == i[1]:
+                                                return True
+
+                                return False
+        return True
+
+
+
+    def check_validity(self,sigma1,sigma2,B,edges):
+
+
+        for i in range(len(sigma1)):
+
+            if i + 1 >= len(sigma1) or i + 1 >= len(sigma2):
+                break
+
+            edge1 = self.returnedge(sigma1[i],sigma1[i+1],edges)
+            edge2 = self.returnedge(sigma2[i],sigma2[i+1],edges)
+
+            if edge1[1] != edge2[1] and ((edge1[3] == B or edge1[4] == B) and (edge2[3] == B or edge2[4] == B)):
+
+
+                C = edge1[3]
+                D = edge2[3]
+
+                m = edge1[5]
+                n = edge2[5]
+
+
+
+                if (C != D or m != n) and (edge1[4] == B) and (edge2[4] == B):
+
+                    return True
+
+                else:
+
+                    print("888888888888888888888888888")
+
+                    print(edges[1],edges2[1])
+
+                    print("888888888888888888888888888")
+
+                    return False
+
+        return True 
+
+
+    #DA FINIRE
+    def well_branchedness_third_condition(self,states,edges,participants):
+
+        corse = self.ritornatuttecorse(edges)
+
+        for p in states:
+
+
+            for A in participants:
+
+                cat = []
+
+
+                for a, b in itertools.combinations(corse, 2):
+                    if a[0] == b[0] == p:
+                        prova1 = a.copy()
+                        prova2 = b.copy()
+
+                        
+                        if self.first_qspan_condition(prova1,prova2) or self.second_qspan_condition(prova1,prova2) or self.third_qspan_condition(prova1,prova2):
+                            #check  choosers
+                        
+                            chooserA = self.returnedge(a[0],a[1],edges)
+                            chooserB = self.returnedge(b[0],b[1],edges)
+
+                            if chooserA[3] == chooserB[3] == A:
+                                cat.append([a,b])
+
+                #se non è vuota
+                for it in range(len(cat)):
+                    for B in participants:
+                        if B != A:
+                            if not (self.check_validity(cat[it][0],cat[it][1],B,edges)):
+                                print("----")
+                                print(cat[it][0],cat[it][1],"B = ",B, "A = ", A)
+                                print("----")
+                                return False
+
+        return True
+
+    def make_well_branchedness(self,graph_name):
+
+        ca = self.ca_dict.get(graph_name)
+
+
+        res1 = self.well_branchedness_first_condition(ca.edges,ca.states)
+        
+        if res1 != None:
+            result = ['Verified: NO Well-branched in first condition: ' + res1]
+            return [result]
+
+
+        res2 = self.well_branchedness_second_condition(ca.edges,ca.states,ca.participants)
+
+        if res2 != None:
+            result = ['Verified: NO Well-branched in second condition ' + res2]
+            return [result]
+
+        res3 = self.well_branchedness_second_condition(ca.edges,ca.states,ca.participants)
+
+        if res3 != None:
+            result = ['Verified: NO Well-branched in third condition ' + res3]
+            return [result]
+
+        else:
+            result = ['Verified: Well-branched']
+            return [result]
+
+
+    #Completato
+    def well_sequencedness_conditions(self,ca):
+
+        #first condition
+        for i in ca.edges:
+            for j in ca.edges:
+                if i[2] == j[0]:
+                    if j[3] != i[3] and j[4] != i[4] and j[4] != i[3] and i[4] != j[3]:
+
+                        #second condition
+                        for k in ca.edges:
+                            if i[2] != k[2] and k[0] == i[0]:
+                                for h in ca.edges:
+                                    if h[0] == k[2] and h[2] == j[0]:
+                                        if  i[1] == h[1] and j[1] == k[1]:
+                                            return None
+                                return (str(i[0]+"  |"+str(i[1])+"|  "+str(i[2])+"  |"+str(j[1])+"|  "+str(j[2])))
+                        return (str(i[0]+"  |"+str(i[1])+"|  "+str(i[2])+"  |"+str(j[1])+"|  "+str(j[2])))
+        return None
+
+
+    def make_well_sequencedness(self,graph_name):
+        ca = self.ca_dict.get(graph_name)
+
+        ret = self.well_sequencedness_conditions(ca)
+
+        if ret == None:
+            result = ['Verified: Well-sequenced']
+            return [result]
+        else:
+            result = ['Verified: NO Well-sequenced, not verified in ' + ret]
+            return [result]

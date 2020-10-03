@@ -149,6 +149,14 @@ class MyGui(ttk.Frame):
         trasformation_menu.add_command(label="Projection",compound=tk.LEFT,command=self.open_proj_view)
         menu_bar.add_cascade(label="Trasformations",menu=trasformation_menu)
 
+        demonstration_menu = Menu(menu_bar, tearoff=False)
+        demonstration_menu.add_command(label="Well-formedness",compound=tk.LEFT,command=self.open_both)
+        demonstration_menu.add_separator()
+        demonstration_menu.add_command(label="Well-branchedness",compound=tk.LEFT,command=self.open_well_branchedness)
+        demonstration_menu.add_command(label="Well-sequencedness",compound=tk.LEFT,command=self.open_well_sequencedness)
+        menu_bar.add_cascade(label="Properties", menu=demonstration_menu)        
+
+
         help_menu = Menu(menu_bar,tearoff=False)
         help_menu.add_command(label="ReadMe",compound=tk.LEFT,command=self.help_window)
         menu_bar.add_cascade(label="Help", menu= help_menu)
@@ -343,6 +351,53 @@ class MyGui(ttk.Frame):
                                  proj_window.destroy()))
         
         proj_button.grid(row=4, column=0)
+
+    
+    def open_both(self):
+        print("ciao")
+
+
+
+    def open_well_branchedness(self):
+        p_window = tk.Toplevel(padx=20, pady=20, bg=self.COLOR_frames)
+        p_window.wm_title("Well-branchedness")
+        p_window.resizable(False, False)
+
+        # set window dimension
+        self.__set_window_dimension__(p_window)
+
+        # label and combo for 1st graph
+        lbl1 = tk.Label(p_window, text="Choose Graph", bg=self.COLOR_frames, fg=self.COLOR_foreground)
+        lbl1.grid(row=0, column=0, pady=10)
+        combo1 = ttk.Combobox(p_window, values=list(self.controller.get_all_ca().keys()))
+        combo1.grid(row=0, column=1, pady=10)
+         
+        verify_button = Button(p_window, text='Verify', bg=self.COLOR_buttons,
+                             command=lambda:
+                             (self.__exec_well_branchedness__(combo1.get()),
+                              p_window.destroy()))
+        verify_button.grid(row=2, column=0, pady=10)
+
+    def open_well_sequencedness(self):
+        p_window = tk.Toplevel(padx=20, pady=20, bg=self.COLOR_frames)
+        p_window.wm_title("Well-sequencedness")
+        p_window.resizable(False, False)
+
+        # set window dimension
+        self.__set_window_dimension__(p_window)
+
+        # label and combo for 1st graph
+        lbl1 = tk.Label(p_window, text="Choose Graph", bg=self.COLOR_frames, fg=self.COLOR_foreground)
+        lbl1.grid(row=0, column=0, pady=10)
+        combo1 = ttk.Combobox(p_window, values=list(self.controller.get_all_ca().keys()))
+        combo1.grid(row=0, column=1, pady=10)
+         
+        verify_button = Button(p_window, text='Verify', bg=self.COLOR_buttons,
+                             command=lambda:
+                             (self.__exec_well_sequencedness__(combo1.get()),
+                              p_window.destroy()))
+        verify_button.grid(row=2, column=0, pady=10)
+
     
     def __add_new_tab__(self, graph_name,v_path):
         
@@ -459,7 +514,6 @@ class MyGui(ttk.Frame):
         # print the log message
         self.log(result[0])
 
-    
     def __make_sync_interface_menu__(self, frame, elements, option_v1, option_v2):
         # label and optionMenu for the 1st interface
         option_v1.set(elements[0])
@@ -485,7 +539,24 @@ class MyGui(ttk.Frame):
         op_menu = ttk.OptionMenu(frame, option, elements[0], *elements)
         op_menu.grid(row=2, column=1, padx=10, pady=10)
         self.__set_window_dimension__(frame)
-    
+
+
+
+    def __exec_well_branchedness__(self,combo_value):
+
+    	result = self.controller.make_well_branchedness(combo_value)
+    	self.log(result[0])
+
+    	return
+
+    def __exec_well_sequencedness__(self,combo_value):
+
+    	result = self.controller.make_well_sequencedness(combo_value)
+    	self.log(result[0])
+
+    	return
+
+
     def __set_window_dimension__(self, frame):
         # set window dimension
         width, height = frame.winfo_reqwidth(), frame.winfo_reqheight()
