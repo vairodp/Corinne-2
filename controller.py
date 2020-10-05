@@ -235,8 +235,6 @@ class Controller:
         # (source_node, label, dest_node, sender, receiver, message)
         new_edges = set()
         new_labels = set()
-        print("CA")
-        print(ca.edges)
         for edge in ca.edges:
             # if the participant is the sender
             if edge[3] == participant:
@@ -251,22 +249,12 @@ class Controller:
             # in all the other cases, empty_label edges
             else:
                 new_edges.add((edge[0], "", edge[2]))
-        print("new_edges")
-        print(new_edges)
         c = CFSM(ca.states, new_labels, new_edges, ca.s0, ca.participants)
-        print("CA pria di fare mosse strane?")
-        print(c.edges)
         
         c.delete_epsilon_moves()
-        print("CA dopo delete epsilon moves")
-        print(c.edges)
         c.minimization()
 
-        print("ok")
-        print(c.edges)
         for edge in c.edges:
-            print("edgee")
-            print(edge)
             g.edge(str(edge[0]), str(edge[2]), label=edge[1])
         # draw and save the graph
         g.save(path_to_store)
@@ -289,10 +277,6 @@ class Controller:
 
             for j in insieme1:
 
-                #corse.append([j[0],[j[1]]])
-
-                #print(str(j[0])+"-->"+str(j[2]))
-
                 arr = [j[0],j[2]]
 
                 corse.append(arr)
@@ -314,8 +298,6 @@ class Controller:
 
                     if self.check_q_branch(io):
 
-                        #print(*dio)
-
                         corse.append(io)
 
                         self.search(j[2],io,insieme1,corse)
@@ -327,8 +309,6 @@ class Controller:
 
         self.search(None,None,insieme,corse)
 
-        #print(*corse)
-
         return corse
 
     def returnedge(self,s1,s2,edges):
@@ -336,43 +316,101 @@ class Controller:
             if e[0] == s1 and e[2] == s2:
                 return e
 
+    def get_corse_candidate(self,corse,states):
+
+        candidates_q_branch = []
+        
+        for s in states:
+
+            print(s)
+            print("------------------------")
+
+            candidati = []
+
+            for c in corse:
+                if c[0] == s:
+                    candidati.append(c)
+
+            print(*candidati)
+
+            if candidati:
+
+                candidates_q_branch.append([s,len(max(candidati,key=len))])
+
+
+        return candidates_q_branch
+
+    #completed
     def first_qspan_condition(self,al,be):
 
-        alpha = al
-        beta = be
+        alpha = al.copy()
+        beta = be.copy()
 
         if alpha[0] == beta[0] and alpha[-1] == beta[-1]:
 
-            alpha.pop(0)
+            a = alpha.pop(0)
             beta.pop(0)
-            alpha.pop(-1)
+            b = alpha.pop(-1)
             beta.pop(-1)
 
-            if not (any(x in alpha for x in beta)):
+
+            if not (any(x in alpha for x in beta)) and a not in alpha and b not in alpha and a not in beta and b not in beta :
                 return True
         return False
 
 
-    def second_qspan_condition(self,alpha,beta):
+    def second_qspan_condition(self,alp,bet,candidates):
+
+        a = alp.copy()
+        b = bet.copy()
+
+        for c in candidates:
+            if a[0] == c[0] and len(a) == len(c):
+
+                for d in candidates:
+                    if b[0] == c[0] == len(b) == len(c):
+
+                        #sono entrambi candidates
+
+                        a.pop(0)
+                        b.pop(0)
+
+                        if not (any(x in a for x in b)):
+                            return True
+                        return False
+
         return False
 
-    def third_qspan_condition(self,alpha,beta):
+
+    def third_qspan_condition(self,alphs,bets,candidates):
+
+        a = alphs.copy()
+        b = bets.copy()
+
+        z = alphs.copy()
+
+        #first loop
+        if a[0] == a[-1]:
+
+            for d in candidates:
+                if b == d:
+                    a.pop(0)
+                    a.pop(-1)
+
+                    if not (any(x in a for x in d)):
+                        return True
+
+        #second loop
+        if b[0] == b[-1]:
+
+            for e in candidates:
+                if e == z:
+                    b.pop(0)
+                    b.pop(-1)
+
+                    if not (any(y in b for y in z)):
+                        return True
         return False
-
-
-
-    def q_span(self,corse):
-
-        qspans = []
-
-        for i in corse:
-            for j in corse:
-                if i != j:
-                    if first_qspan_condition(i,j) or second_qspan_condition(i,j) or third_qspan_condition(i,j):
-
-                        qspans.append([i,j])
-
-        return qspans
 
 
     def check_choosers(self,alpha,beta,edges):
@@ -387,7 +425,6 @@ class Controller:
         return False
 
 
-    #Completed
     def well_branchedness_first_condition(self,edges,states):
 
         for i in states:
@@ -412,7 +449,6 @@ class Controller:
 
         return None
 
-    #Completed
     def well_branchedness_second_condition(self,edges,states,participants):
 
         for s in states:
@@ -427,12 +463,13 @@ class Controller:
                                 for x in edges:
                                     for y in edges:
 
-                                        if x[0] == i [2] and y[0] == j:
+                                        if x[0] == i[2] and y[0] == j[2]:
+                                            #ho trovato tutti gli edges
                                             if x[2] == y[2] and x[1] == j[1] and y[1] == i[1]:
-                                                return True
+                                                return None
 
-                                return False
-        return True
+                                return (str(i[0]+"  |"+str(i[1])+"|  "+str(i[2])+"  |"+str(j[1])+"|  "+str(j[2])))
+        return None
 
 
 
@@ -474,15 +511,15 @@ class Controller:
 
         return True 
 
-
-    #DA FINIRE
     def well_branchedness_third_condition(self,states,edges,participants):
+
 
         corse = self.ritornatuttecorse(edges)
 
+        candidate = self.get_corse_candidate(corse,states)
+
         for p in states:
-
-
+            
             for A in participants:
 
                 cat = []
@@ -493,8 +530,8 @@ class Controller:
                         prova1 = a.copy()
                         prova2 = b.copy()
 
-                        
-                        if self.first_qspan_condition(prova1,prova2) or self.second_qspan_condition(prova1,prova2) or self.third_qspan_condition(prova1,prova2):
+                        #controllo se sono una coppia qspan
+                        if self.first_qspan_condition(prova1,prova2) or self.second_qspan_condition(prova1,prova2,candidate) or self.third_qspan_condition(prova1,prova2,candidate):
                             #check  choosers
                         
                             chooserA = self.returnedge(a[0],a[1],edges)
@@ -511,9 +548,9 @@ class Controller:
                                 print("----")
                                 print(cat[it][0],cat[it][1],"B = ",B, "A = ", A)
                                 print("----")
-                                return False
+                                return "ERROR"
 
-        return True
+        return None
 
     def make_well_branchedness(self,graph_name):
 
@@ -533,7 +570,7 @@ class Controller:
             result = ['Verified: NO Well-branched in second condition ' + res2]
             return [result]
 
-        res3 = self.well_branchedness_second_condition(ca.edges,ca.states,ca.participants)
+        res3 = self.well_branchedness_third_condition(ca.states,ca.edges,ca.participants)
 
         if res3 != None:
             result = ['Verified: NO Well-branched in third condition ' + res3]
@@ -576,3 +613,23 @@ class Controller:
         else:
             result = ['Verified: NO Well-sequenced, not verified in ' + ret]
             return [result]
+
+
+
+    def make_well_formedness(self,graph_name):
+
+        resultWS = self.make_well_sequencedness(graph_name)
+
+
+        if resultWS[0][0] == 'Verified: Well-sequenced':
+
+            resultWB = self.make_well_branchedness(graph_name)
+
+            if resultWB[0][0] == 'Verified: Well-branched':
+
+                result = ['Verified: Well-formed']
+                return [result]
+                
+            return [resultWB[0]]
+
+        return [resultWS[0]]

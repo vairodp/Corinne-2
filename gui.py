@@ -150,7 +150,7 @@ class MyGui(ttk.Frame):
         menu_bar.add_cascade(label="Trasformations",menu=trasformation_menu)
 
         demonstration_menu = Menu(menu_bar, tearoff=False)
-        demonstration_menu.add_command(label="Well-formedness",compound=tk.LEFT,command=self.open_both)
+        demonstration_menu.add_command(label="Well-formedness",compound=tk.LEFT,command=self.open_well_formedness)
         demonstration_menu.add_separator()
         demonstration_menu.add_command(label="Well-branchedness",compound=tk.LEFT,command=self.open_well_branchedness)
         demonstration_menu.add_command(label="Well-sequencedness",compound=tk.LEFT,command=self.open_well_sequencedness)
@@ -353,8 +353,27 @@ class MyGui(ttk.Frame):
         proj_button.grid(row=4, column=0)
 
     
-    def open_both(self):
-        print("ciao")
+    def open_well_formedness(self):
+        p_window = tk.Toplevel(padx=20, pady=20, bg=self.COLOR_frames)
+        p_window.wm_title("Well-formedness")
+        p_window.resizable(False, False)
+
+        # set window dimension
+        self.__set_window_dimension__(p_window)
+
+        # label and combo for 1st graph
+        lbl1 = tk.Label(p_window, text="Choose Graph", bg=self.COLOR_frames, fg=self.COLOR_foreground)
+        lbl1.grid(row=0, column=0, pady=10)
+        combo1 = ttk.Combobox(p_window, values=list(self.controller.get_all_ca().keys()))
+        combo1.grid(row=0, column=1, pady=10)
+         
+        verify_button = Button(p_window, text='Verify', bg=self.COLOR_buttons,
+                             command=lambda:
+                             (self.__exec_well_formedness__(combo1.get()),
+                              p_window.destroy()))
+        verify_button.grid(row=2, column=0, pady=10)
+
+
 
 
 
@@ -541,6 +560,13 @@ class MyGui(ttk.Frame):
         self.__set_window_dimension__(frame)
 
 
+
+    def __exec_well_formedness__(self,combo_value):
+
+    	result = self.controller.make_well_formedness(combo_value)
+    	self.log(result[0])
+
+    	return
 
     def __exec_well_branchedness__(self,combo_value):
 
