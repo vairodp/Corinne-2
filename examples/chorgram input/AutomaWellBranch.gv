@@ -1,0 +1,11 @@
+digraph AutomaWellBranched {
+	s0 [label="" height=0 shape=none width=0]
+	s0 -> 0
+	0 -> 1 [label="C->S:req"]
+	1 -> 2 [label="S->C:res"]
+	2 -> 3 [label="S->L:cnt"]
+	3 -> 4 [label="C->L:bye"]
+	3 -> 5 [label="C->L:ok"]
+	4 -> 6 [label="C->L:bye"]
+	5 -> 7 [label="C->L:ref"]
+}

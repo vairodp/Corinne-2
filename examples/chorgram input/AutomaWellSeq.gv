@@ -1,0 +1,10 @@
+digraph AutomaWellSeq {
+	s0 [label="" height=0 shape=none width=0]
+	s0 -> 0
+	0 -> 1 [label="C->S:req"]
+	1 -> 2 [label="S->C:res"]
+	2 -> 3 [label="S->L:cnt"]
+	3 -> 4 [label="C->L:bye"]
+	4 -> 5 [label="C->L:ok"]
+	5 -> 1 [label="C->L:bye"]
+}
