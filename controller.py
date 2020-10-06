@@ -322,16 +322,11 @@ class Controller:
         
         for s in states:
 
-            print(s)
-            print("------------------------")
-
             candidati = []
 
             for c in corse:
                 if c[0] == s:
                     candidati.append(c)
-
-            print(*candidati)
 
             if candidati:
 
@@ -365,19 +360,15 @@ class Controller:
         b = bet.copy()
 
         for c in candidates:
-            if a[0] == c[0] and len(a) == len(c):
 
-                for d in candidates:
-                    if b[0] == c[0] == len(b) == len(c):
+            if a[0] == c[0] and len(a) == c[1] == len(b):
 
-                        #sono entrambi candidates
+                a.pop(0)
+                b.pop(0)
 
-                        a.pop(0)
-                        b.pop(0)
-
-                        if not (any(x in a for x in b)):
-                            return True
-                        return False
+                if not (any(x in a for x in b)):
+                    return True
+                return False
 
         return False
 
@@ -475,7 +466,6 @@ class Controller:
 
     def check_validity(self,sigma1,sigma2,B,edges):
 
-
         for i in range(len(sigma1)):
 
             if i + 1 >= len(sigma1) or i + 1 >= len(sigma2):
@@ -486,33 +476,41 @@ class Controller:
 
             if edge1[1] != edge2[1] and ((edge1[3] == B or edge1[4] == B) and (edge2[3] == B or edge2[4] == B)):
 
-
                 C = edge1[3]
                 D = edge2[3]
 
                 m = edge1[5]
                 n = edge2[5]
 
-
-
                 if (C != D or m != n) and (edge1[4] == B) and (edge2[4] == B):
 
-                    return True
+                    None
 
                 else:
 
-                    print("888888888888888888888888888")
-
-                    print(edges[1],edges2[1])
-
-                    print("888888888888888888888888888")
-
                     return False
 
-        return True 
+            else:
+                return False
+
+        return True
+
+    def return_proj(self,arr,edges):
+        part = []
+
+        for i in range(len(arr)):
+            if i + 1 >= len(arr):
+                break
+
+            edge = self.returnedge(arr[i],arr[i+1],edges)
+
+            part.append(edge[3])
+            part.append(edge[4])
+
+
+        return part
 
     def well_branchedness_third_condition(self,states,edges,participants):
-
 
         corse = self.ritornatuttecorse(edges)
 
@@ -526,14 +524,23 @@ class Controller:
 
 
                 for a, b in itertools.combinations(corse, 2):
+
                     if a[0] == b[0] == p:
+                        
                         prova1 = a.copy()
                         prova2 = b.copy()
 
+                        prova3 = a.copy()
+                        prova4 = b.copy()
+
+                        prova5 = a.copy()
+                        prova6 = b.copy()
+
                         #controllo se sono una coppia qspan
-                        if self.first_qspan_condition(prova1,prova2) or self.second_qspan_condition(prova1,prova2,candidate) or self.third_qspan_condition(prova1,prova2,candidate):
+                        if self.first_qspan_condition(prova1,prova2) or self.second_qspan_condition(prova3,prova4,candidate) or self.third_qspan_condition(prova5,prova6,candidate):
+
                             #check  choosers
-                        
+
                             chooserA = self.returnedge(a[0],a[1],edges)
                             chooserB = self.returnedge(b[0],b[1],edges)
 
@@ -542,13 +549,15 @@ class Controller:
 
                 #se non è vuota
                 for it in range(len(cat)):
+
+
+                    proj1 = self.return_proj(cat[it][0],edges)
+                    proj2 = self.return_proj(cat[it][1],edges)
+
                     for B in participants:
-                        if B != A:
+                        if B != A and B in proj1 and B in proj2:
                             if not (self.check_validity(cat[it][0],cat[it][1],B,edges)):
-                                print("----")
-                                print(cat[it][0],cat[it][1],"B = ",B, "A = ", A)
-                                print("----")
-                                return "ERROR"
+                                return str((cat[it][0],cat[it][1],"B = ",B, "A = ", A))
 
         return None
 
