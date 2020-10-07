@@ -5,7 +5,7 @@ digraph automaNoWellBranched {
 	1 -> 2 [label="S->C:res"]
 	2 -> 3 [label="S->L:cnt"]
 	3 -> 4 [label="C->L:bye"]
-	3 -> 5 [label="C->L:ok"]
+	3 -> 5 [label="C->S:ok"]
 	4 -> 6 [label="S->L:bye"]
 	5 -> 7 [label="S->L:bye"]
 }

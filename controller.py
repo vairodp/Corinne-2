@@ -474,7 +474,8 @@ class Controller:
             edge1 = self.returnedge(sigma1[i],sigma1[i+1],edges)
             edge2 = self.returnedge(sigma2[i],sigma2[i+1],edges)
 
-            if edge1[1] != edge2[1] and ((edge1[3] == B or edge1[4] == B) and (edge2[3] == B or edge2[4] == B)):
+
+            if edge1[1] != edge2[1]:
 
                 C = edge1[3]
                 D = edge2[3]
@@ -482,9 +483,9 @@ class Controller:
                 m = edge1[5]
                 n = edge2[5]
 
-                if (C != D or m != n) and (edge1[4] == B) and (edge2[4] == B):
+                if (C != D or m != n) and (edge1[4] == edge2[4]):
 
-                    None
+                    return True
 
                 else:
 
