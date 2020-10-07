@@ -1,0 +1,3 @@
+A -> D : m ; A -> B : m; B -> C:m 
++ 
+A -> D: n ; A -> B : m; B -> C:n
