@@ -1,0 +1,10 @@
+digraph exCycleWB {
+	s0 [label="" height=0 shape=none width=0]
+		s0 -> 0
+		0 -> 1 [label="A->D:m"]
+		1 -> 2 [label="A->B:m"]
+		2 -> 3 [label="A->D:n"]
+		3 -> 0 [label="D->A:m"]
+		3 -> 4 [label="D->A:n"]
+		4 -> 5 [label="A->B:n"]		
+}

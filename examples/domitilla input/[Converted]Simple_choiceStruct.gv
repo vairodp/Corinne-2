@@ -1,8 +1,8 @@
 digraph Simple_choiceStruct {
 	s0 [label="" height=0 shape=none width=0]
 		s0 -> 0
-		1 -> 4 [label="K->B:m"]
-		0 -> 2 [label="K->B:m"]
-		2 -> 3 [label="K->C:n"]
-		0 -> 1 [label="K->C:n"]
+		0 -> 2 [label="K->C:n"]
+		2 -> 3 [label="K->B:m"]
+		1 -> 4 [label="K->C:n"]
+		0 -> 1 [label="K->B:m"]
 }
