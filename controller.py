@@ -270,7 +270,6 @@ class Controller:
 
         return True
 
-
     def search(self,i, arr,insieme1,corse):
 
         if (i == None):
@@ -316,24 +315,39 @@ class Controller:
             if e[0] == s1 and e[2] == s2:
                 return e
 
+    def iter(self,a,corse):
+
+        for b in corse:
+            if self.sublist(a,b):
+                return True
+        return False
+
+
     def get_corse_candidate(self,corse,states):
 
-        candidates_q_branch = []
+        candidates = []
+
+        for a in corse:
+            
+            if self.iter(a,corse) == False:
+                candidates.append(a)
+
+        return candidates
+
+    #ritorna true se è una sublist
+    def sublist(self,a,b):
+
+        if len(a) <= len(b) and a != b:
+
+            for i in range(len(a)):
+                if a[i] != b[i]:
+                    return False
+
+            return True
+
+        return False
+
         
-        for s in states:
-
-            candidati = []
-
-            for c in corse:
-                if c[0] == s:
-                    candidati.append(c)
-
-            if candidati:
-
-                candidates_q_branch.append([s,len(max(candidati,key=len))])
-
-
-        return candidates_q_branch
 
     #completed
     def first_qspan_condition(self,al,be):
@@ -356,20 +370,16 @@ class Controller:
 
     def second_qspan_condition(self,alp,bet,candidates):
 
-        a = alp.copy()
-        b = bet.copy()
+        a=alp.copy()
+        b=bet.copy()
 
-        for c in candidates:
+        if (alp in candidates) and (bet in candidates):
+            a.pop(0)
+            b.pop(0)
 
-            if a[0] == c[0] and len(a) == c[1] == len(b):
-
-                a.pop(0)
-                b.pop(0)
-
-                if not (any(x in a for x in b)):
-                    return True
-                return False
-
+            if not (any(x in a for x in b)):
+                return True
+            return False
         return False
 
 
@@ -378,29 +388,27 @@ class Controller:
         a = alphs.copy()
         b = bets.copy()
 
-        z = alphs.copy()
-
         #first loop
         if a[0] == a[-1]:
 
-            for d in candidates:
-                if b == d:
-                    a.pop(0)
-                    a.pop(-1)
 
-                    if not (any(x in a for x in d)):
-                        return True
+            if b in candidates:
+                a.pop(0)
+                a.pop(-1)
+
+                if not (any(x in a for x in b)):
+                    return True
 
         #second loop
         if b[0] == b[-1]:
 
-            for e in candidates:
-                if e == z:
-                    b.pop(0)
-                    b.pop(-1)
+            if a in candidates:
+                b.pop(0)
+                b.pop(-1)
 
-                    if not (any(y in b for y in z)):
-                        return True
+                if not (any(y in b for y in a)):
+                    return True
+
         return False
 
 
@@ -464,7 +472,7 @@ class Controller:
 
 
 
-    def check_validity(self,sigma1,sigma2,B,edges):
+    def old_check_validity(self,sigma1,sigma2,B,edges):
 
         for i in range(len(sigma1)):
 
@@ -496,6 +504,85 @@ class Controller:
 
         return True
 
+
+    def get_first_label(self,participant,edges):
+
+        for run in edges:
+            if participant == run[3] or participant == run[4]:
+                return run
+        return None
+ 
+    def check_form(self,edge1,edge2,B):
+
+        C = edge1[3]
+        D = edge2[3]
+        m = edge1[5]
+        n = edge2[5]
+
+        if ((edge1[4] == edge2[4] == B) and ((C != D) or (m != n))):
+
+            return True
+
+        return False
+
+
+
+    def check_validity(self,sigma1,sigma2,edges,participants):
+
+        #print("Check check_validity")
+
+        #print("SIGME ",sigma1,sigma2)
+
+
+        edges1 = []
+        edges2 = []
+
+        for i in range(len(sigma1)):
+
+            if i+1 >= len(sigma1):
+                break
+
+            edges1.append(self.returnedge(sigma1[i],sigma1[i+1],edges))
+
+        for i in range(len(sigma2)):
+
+            if i+1 >= len(sigma2):
+                break
+
+            edges2.append(self.returnedge(sigma2[i],sigma2[i+1],edges))
+
+        #print("EDGeS: ",*edges1)
+        #print("EDGES: ",*edges2)
+
+        B = participants.copy()
+
+        chooser = self.returnedge(sigma1[0],sigma2[1],edges)
+
+        A = chooser[3]
+        B.remove(A)
+
+        for bee in B:
+
+            firstlabel = self.get_first_label(bee,edges1)
+            secondlabel = self.get_first_label(bee,edges2)
+
+            #print("First label of ",bee," ",firstlabel)
+            #print("First label of ",bee," ",secondlabel)
+
+
+            if (firstlabel == None) or (secondlabel == None):
+                if firstlabel != secondlabel:
+                    return bee
+
+            elif not firstlabel[1] == secondlabel[1]:
+
+                if not (self.check_form(firstlabel,secondlabel,bee)):
+                    return bee
+
+
+        return None
+
+
     def return_proj(self,arr,edges):
         part = []
 
@@ -517,12 +604,18 @@ class Controller:
 
         candidate = self.get_corse_candidate(corse,states)
 
+        cat = []
+
+        #print(*candidate)
+
+        #print("CANDIDATES")
+
+        #for elem in candidate:
+            #print (elem)
+
         for p in states:
             
             for A in participants:
-
-                cat = []
-
 
                 for a, b in itertools.combinations(corse, 2):
 
@@ -546,19 +639,21 @@ class Controller:
                             chooserB = self.returnedge(b[0],b[1],edges)
 
                             if chooserA[3] == chooserB[3] == A:
+                                #print("ok")
                                 cat.append([a,b])
 
-                #se non è vuota
-                for it in range(len(cat)):
+        #print(*cat)
+        #print("_________________CAT______________________")
+        #for elems in cat:
+            #print(elems)
 
 
-                    proj1 = self.return_proj(cat[it][0],edges)
-                    proj2 = self.return_proj(cat[it][1],edges)
+        for it in range(len(cat)):
 
-                    for B in participants:
-                        if B != A and B in proj1 and B in proj2:
-                            if not (self.check_validity(cat[it][0],cat[it][1],B,edges)):
-                                return str((cat[it][0],cat[it][1],"B = ",B, "A = ", A))
+            ret = self.check_validity(cat[it][0],cat[it][1],edges,participants)
+
+            if not (ret == None):
+                return str((cat[it][0],cat[it][1],"B = ",ret))
 
         return None
 
