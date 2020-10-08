@@ -505,12 +505,107 @@ class Controller:
         return True
 
 
-    def get_first_label(self,participant,edges):
+    def get_first(self,participant,edges):
 
-        for run in edges:
-            if participant == run[3] or participant == run[4]:
-                return run
+
+        if edges != None:
+            for run in edges:
+                if participant == run[3] or participant == run[4]:
+                    return run
         return None
+
+    def get_first_label(self,participant,edges1,edges2):
+
+        #print("----------")
+        #print(participant)
+        #print(edges1)
+        #print(edges2)
+
+        firstlabel = self.get_first(participant,edges1)
+        secondlabel = self.get_first(participant,edges2)
+
+        #print(firstlabel,secondlabel)
+
+        #print("-----")
+
+
+        if (firstlabel != None and secondlabel != None):
+            #print("hec")
+            if firstlabel[1] == secondlabel[1]:
+                #print("wow")
+
+                #print("Edges1: ",edges1)
+                #print("Firstlabel: ",firstlabel)
+
+
+
+                edges1.remove(firstlabel)
+                edges2.remove(secondlabel)
+
+
+
+                return (self.get_first_label(participant,edges1,edges2))
+
+            else:
+                #print("oddio")
+                #print(firstlabel,secondlabel)
+                return firstlabel,secondlabel
+
+        else:
+            #print("lol")
+            #print(firstlabel,secondlabel)
+            return firstlabel, secondlabel
+
+
+
+    def new_get_first_label(self,participant,edge1,edge2):
+
+        r = None
+        n = None
+
+
+
+        if edge1 != None:
+            for run in edge1:
+                if participant == run[3] or participant == run[4]:
+                    r = run
+                    break
+
+        if edge2 != None:
+            for nur in edge2:
+                if participant == nur[3] or participant == nur[4]:
+                    n = nur
+                    break
+
+        if (r == None and n != None) or (n == None and r != None):
+            return "Errore", None
+        elif(r[1] == n[1]):
+            print("r ",r)
+            print("n", n)
+            pass1 =edge1.remove(r)
+            pass2 = edge2.remove(n)
+            return self.get_first_label(participant,pass1,pass2)
+        else:
+            return run,nur
+
+
+
+
+
+        #print("dentro ",edge1)
+        #print("dentro ",edge2)
+
+        #for run in edge1:
+            #print("ok")
+            #for nur in edge2:
+                #print("ko")
+
+                #if (participant == run[3] or participant == run[4]) and (participant == nur[3] or participant == nur[4]):
+                    #if nur[1] == run[1]:
+                        #break
+                    #else:
+                        #return (run, nur)
+
  
     def check_form(self,edge1,edge2,B):
 
@@ -518,6 +613,7 @@ class Controller:
         D = edge2[3]
         m = edge1[5]
         n = edge2[5]
+
 
         if ((edge1[4] == edge2[4] == B) and ((C != D) or (m != n))):
 
@@ -530,8 +626,6 @@ class Controller:
     def check_validity(self,sigma1,sigma2,edges,participants):
 
         #print("Check check_validity")
-
-        #print("SIGME ",sigma1,sigma2)
 
 
         edges1 = []
@@ -563,8 +657,14 @@ class Controller:
 
         for bee in B:
 
-            firstlabel = self.get_first_label(bee,edges1)
-            secondlabel = self.get_first_label(bee,edges2)
+            #print("B ",bee)
+
+
+
+            firstlabel,secondlabel = self.get_first_label(bee,edges1,edges2)
+            #print("mmm")
+            #firstlabel = self.get_first_label(bee,edges1)
+            #secondlabel = self.get_first_label(bee,edges2)
 
             #print("First label of ",bee," ",firstlabel)
             #print("First label of ",bee," ",secondlabel)
@@ -574,7 +674,7 @@ class Controller:
                 if firstlabel != secondlabel:
                     return bee
 
-            elif not firstlabel[1] == secondlabel[1]:
+            elif firstlabel[1] != secondlabel[1]:
 
                 if not (self.check_form(firstlabel,secondlabel,bee)):
                     return bee
