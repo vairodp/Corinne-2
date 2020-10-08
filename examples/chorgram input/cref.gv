@@ -1,0 +1,13 @@
+digraph cref {
+	s0 [label="" height=0 shape=none width=0]
+	s0 -> 0
+	0 -> 1 [label="C->S:req"]
+	1 -> 2 [label="S->C:res"]
+	2 -> 3 [label="S->L:cnt"]
+	3 -> 0 [label="C->S:ok"]
+	3 -> 4 [label="C->S:ref"]
+	4 -> 2 [label="S->C:res"]
+	4 -> 3 [label="S->C:noref"]
+	3 -> 5 [label="C->S:bye"]
+	5 -> 6 [label="S->L:bye"]
+}
