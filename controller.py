@@ -8,6 +8,7 @@ from dot_parser.MyErrorListener import parseError
 from dot_parser.MyVisitor import ForkStatementDetected
 
 import itertools
+from well_formedness import well_sequencedness_conditions, well_branchedness_first_condition, well_branchedness_second_condition, well_branchedness_third_condition
 
 
 class Controller:
@@ -262,520 +263,29 @@ class Controller:
         return ["[CREATED] " + path_to_store]
 
 
-    def check_q_branch(self,array):
+    # Check each condition of Well-Branchedness one by one. It stops as soon as a
+    # condition is not met and returns the associated error
 
-        for i in array:
-            if array.count(i) == 3:
-                return False
-
-        return True
-
-    def search(self,i, arr,insieme1,corse):
-
-        if (i == None):
-
-            for j in insieme1:
-
-                arr = [j[0],j[2]]
-
-                corse.append(arr)
-
-                self.search(j[2],arr,insieme1,corse)
-
-        else:
-
-            for j in insieme1:
-
-                if i == j[0]:
-
-                    io = []
-
-                    for ite in arr:
-                        io.append(ite)
-
-                    io.append(j[2])
-
-                    if self.check_q_branch(io):
-
-                        corse.append(io)
-
-                        self.search(j[2],io,insieme1,corse)
-
-
-    def ritornatuttecorse(self,insieme):
-
-        corse = []
-
-        self.search(None,None,insieme,corse)
-
-        return corse
-
-    def returnedge(self,s1,s2,edges):
-        for e in edges:
-            if e[0] == s1 and e[2] == s2:
-                return e
-
-    def iter(self,a,corse):
-
-        for b in corse:
-            if self.sublist(a,b):
-                return True
-        return False
-
-
-    def get_corse_candidate(self,corse,states):
-
-        candidates = []
-
-        for a in corse:
-            
-            if self.iter(a,corse) == False:
-                candidates.append(a)
-
-        return candidates
-
-    #ritorna true se è una sublist
-    def sublist(self,a,b):
-
-        if len(a) <= len(b) and a != b:
-
-            for i in range(len(a)):
-                if a[i] != b[i]:
-                    return False
-
-            return True
-
-        return False
-
-        
-
-    #completed
-    def first_qspan_condition(self,al,be):
-
-        alpha = al.copy()
-        beta = be.copy()
-
-        if alpha[0] == beta[0] and alpha[-1] == beta[-1]:
-
-            a = alpha.pop(0)
-            beta.pop(0)
-            b = alpha.pop(-1)
-            beta.pop(-1)
-
-
-            if not (any(x in alpha for x in beta)) and a not in alpha and b not in alpha and a not in beta and b not in beta :
-                return True
-        return False
-
-
-    def second_qspan_condition(self,alp,bet,candidates):
-
-        a=alp.copy()
-        b=bet.copy()
-
-        if (alp in candidates) and (bet in candidates):
-            a.pop(0)
-            b.pop(0)
-
-            if not (any(x in a for x in b)):
-                return True
-            return False
-        return False
-
-
-    def third_qspan_condition(self,alphs,bets,candidates):
-
-        a = alphs.copy()
-        b = bets.copy()
-
-        #first loop
-        if a[0] == a[-1]:
-
-
-            if b in candidates:
-                a.pop(0)
-                a.pop(-1)
-
-                if not (any(x in a for x in b)):
-                    return True
-
-        #second loop
-        if b[0] == b[-1]:
-
-            if a in candidates:
-                b.pop(0)
-                b.pop(-1)
-
-                if not (any(y in b for y in a)):
-                    return True
-
-        return False
-
-
-    def check_choosers(self,alpha,beta,edges):
-
-        for edge1 in edges:
-                if edges1[0] == alpha[0] and edges1[2] == alpha[1]:
-                    for edge2 in edges:
-                        if edges2[0] == beta[0] and edges2[1] == beta[1]:
-                            if edges1[3] == edges2[3]:
-                                return True
-
-        return False
-
-
-    def well_branchedness_first_condition(self,edges,states):
-
-        for i in states:
-
-            senders = []
-            receivers = []
-
-            for j in edges:
-
-                if j[0] == i:
-
-                    senders.append(j[3])
-                    receivers.append(j[4])
-
-                    if j[4] in senders:
-
-                       return ("participant "+str(j[4]+" is a sender and also a receiver in transitions from "+j[0]))
-
-                    if j[3] in receivers:
-
-                        return ("participant "+str(j[3]+" is a sender and also a receiver in transitions from "+j[0]))
-
-        return None
-
-    def well_branchedness_second_condition(self,edges,states,participants):
-
-        for s in states:
-            for a in participants:
-
-                for i in edges:
-                    if i[3] == a:
-                        for j in edges:
-                            if i[0] == j[0] and i[3] != j[3]:
-
-
-                                for x in edges:
-                                    for y in edges:
-
-                                        if x[0] == i[2] and y[0] == j[2]:
-                                            #ho trovato tutti gli edges
-                                            if x[2] == y[2] and x[1] == j[1] and y[1] == i[1]:
-                                                return None
-
-                                return (str(i[0]+"  |"+str(i[1])+"|  "+str(i[2])+"  |"+str(j[1])+"|  "+str(j[2])))
-        return None
-
-
-
-    def old_check_validity(self,sigma1,sigma2,B,edges):
-
-        for i in range(len(sigma1)):
-
-            if i + 1 >= len(sigma1) or i + 1 >= len(sigma2):
-                break
-
-            edge1 = self.returnedge(sigma1[i],sigma1[i+1],edges)
-            edge2 = self.returnedge(sigma2[i],sigma2[i+1],edges)
-
-
-            if edge1[1] != edge2[1]:
-
-                C = edge1[3]
-                D = edge2[3]
-
-                m = edge1[5]
-                n = edge2[5]
-
-                if (C != D or m != n) and (edge1[4] == edge2[4]):
-
-                    return True
-
-                else:
-
-                    return False
-
-            else:
-                return False
-
-        return True
-
-
-    def get_first(self,participant,edges):
-
-
-        if edges != None:
-            for run in edges:
-                if participant == run[3] or participant == run[4]:
-                    return run
-        return None
-
-    def get_first_label(self,participant,edges1,edges2):
-
-        #print("----------")
-        #print(participant)
-        #print(edges1)
-        #print(edges2)
-
-        firstlabel = self.get_first(participant,edges1)
-        secondlabel = self.get_first(participant,edges2)
-
-        #print(firstlabel,secondlabel)
-
-        #print("-----")
-
-
-        if (firstlabel != None and secondlabel != None):
-            #print("hec")
-            if firstlabel[1] == secondlabel[1]:
-                #print("wow")
-
-                #print("Edges1: ",edges1)
-                #print("Firstlabel: ",firstlabel)
-
-
-
-                edges1.remove(firstlabel)
-                edges2.remove(secondlabel)
-
-
-
-                return (self.get_first_label(participant,edges1,edges2))
-
-            else:
-                #print("oddio")
-                #print(firstlabel,secondlabel)
-                return firstlabel,secondlabel
-
-        else:
-            #print("lol")
-            #print(firstlabel,secondlabel)
-            return firstlabel, secondlabel
-
-
-
-    def new_get_first_label(self,participant,edge1,edge2):
-
-        r = None
-        n = None
-
-
-
-        if edge1 != None:
-            for run in edge1:
-                if participant == run[3] or participant == run[4]:
-                    r = run
-                    break
-
-        if edge2 != None:
-            for nur in edge2:
-                if participant == nur[3] or participant == nur[4]:
-                    n = nur
-                    break
-
-        if (r == None and n != None) or (n == None and r != None):
-            return "Errore", None
-        elif(r[1] == n[1]):
-            print("r ",r)
-            print("n", n)
-            pass1 =edge1.remove(r)
-            pass2 = edge2.remove(n)
-            return self.get_first_label(participant,pass1,pass2)
-        else:
-            return run,nur
-
-
-
-
-
-        #print("dentro ",edge1)
-        #print("dentro ",edge2)
-
-        #for run in edge1:
-            #print("ok")
-            #for nur in edge2:
-                #print("ko")
-
-                #if (participant == run[3] or participant == run[4]) and (participant == nur[3] or participant == nur[4]):
-                    #if nur[1] == run[1]:
-                        #break
-                    #else:
-                        #return (run, nur)
-
- 
-    def check_form(self,edge1,edge2,B):
-
-        C = edge1[3]
-        D = edge2[3]
-        m = edge1[5]
-        n = edge2[5]
-
-
-        if ((edge1[4] == edge2[4] == B) and ((C != D) or (m != n))):
-
-            return True
-
-        return False
-
-
-
-    def check_validity(self,sigma1,sigma2,edges,participants):
-
-        #print("Check check_validity")
-
-
-        edges1 = []
-        edges2 = []
-
-        for i in range(len(sigma1)):
-
-            if i+1 >= len(sigma1):
-                break
-
-            edges1.append(self.returnedge(sigma1[i],sigma1[i+1],edges))
-
-        for i in range(len(sigma2)):
-
-            if i+1 >= len(sigma2):
-                break
-
-            edges2.append(self.returnedge(sigma2[i],sigma2[i+1],edges))
-
-        #print("EDGeS: ",*edges1)
-        #print("EDGES: ",*edges2)
-
-        B = participants.copy()
-
-        chooser = self.returnedge(sigma1[0],sigma2[1],edges)
-
-        A = chooser[3]
-        B.remove(A)
-
-        for bee in B:
-
-            #print("B ",bee)
-
-
-
-            firstlabel,secondlabel = self.get_first_label(bee,edges1,edges2)
-            #print("mmm")
-            #firstlabel = self.get_first_label(bee,edges1)
-            #secondlabel = self.get_first_label(bee,edges2)
-
-            #print("First label of ",bee," ",firstlabel)
-            #print("First label of ",bee," ",secondlabel)
-
-
-            if (firstlabel == None) or (secondlabel == None):
-                if firstlabel != secondlabel:
-                    return bee
-
-            elif firstlabel[1] != secondlabel[1]:
-
-                if not (self.check_form(firstlabel,secondlabel,bee)):
-                    return bee
-
-
-        return None
-
-
-    def return_proj(self,arr,edges):
-        part = []
-
-        for i in range(len(arr)):
-            if i + 1 >= len(arr):
-                break
-
-            edge = self.returnedge(arr[i],arr[i+1],edges)
-
-            part.append(edge[3])
-            part.append(edge[4])
-
-
-        return part
-
-    def well_branchedness_third_condition(self,states,edges,participants):
-
-        corse = self.ritornatuttecorse(edges)
-
-        candidate = self.get_corse_candidate(corse,states)
-
-        cat = []
-
-        #print(*candidate)
-
-        #print("CANDIDATES")
-
-        #for elem in candidate:
-            #print (elem)
-
-        for p in states:
-            
-            for A in participants:
-
-                for a, b in itertools.combinations(corse, 2):
-
-                    if a[0] == b[0] == p:
-                        
-                        prova1 = a.copy()
-                        prova2 = b.copy()
-
-                        prova3 = a.copy()
-                        prova4 = b.copy()
-
-                        prova5 = a.copy()
-                        prova6 = b.copy()
-
-                        #controllo se sono una coppia qspan
-                        if self.first_qspan_condition(prova1,prova2) or self.second_qspan_condition(prova3,prova4,candidate) or self.third_qspan_condition(prova5,prova6,candidate):
-
-                            #check  choosers
-
-                            chooserA = self.returnedge(a[0],a[1],edges)
-                            chooserB = self.returnedge(b[0],b[1],edges)
-
-                            if chooserA[3] == chooserB[3] == A:
-                                #print("ok")
-                                cat.append([a,b])
-
-        #print(*cat)
-        #print("_________________CAT______________________")
-        #for elems in cat:
-            #print(elems)
-
-
-        for it in range(len(cat)):
-
-            ret = self.check_validity(cat[it][0],cat[it][1],edges,participants)
-
-            if not (ret == None):
-                return str((cat[it][0],cat[it][1],"B = ",ret))
-
-        return None
-
-    def make_well_branchedness(self,graph_name):
+    def make_well_branchedness(self, graph_name):
 
         ca = self.ca_dict.get(graph_name)
 
-
-        res1 = self.well_branchedness_first_condition(ca.edges,ca.states)
+        # First error check
+        res1 = well_branchedness_first_condition(ca.edges,ca.states)
         
         if res1 != None:
             result = ['Verified: NO Well-branched in first condition: ' + res1]
             return [result]
 
-
-        res2 = self.well_branchedness_second_condition(ca.edges,ca.states,ca.participants)
+        # Second error check
+        res2 = well_branchedness_second_condition(ca.edges,ca.states,ca.participants)
 
         if res2 != None:
             result = ['Verified: NO Well-branched in second condition ' + res2]
             return [result]
 
-        res3 = self.well_branchedness_third_condition(ca.states,ca.edges,ca.participants)
+        # Third error check
+        res3 = well_branchedness_third_condition(ca.states,ca.edges,ca.participants)
 
         if res3 != None:
             result = ['Verified: NO Well-branched in third condition ' + res3]
@@ -786,31 +296,14 @@ class Controller:
             return [result]
 
 
-    #Completato
-    def well_sequencedness_conditions(self,ca):
+    # Call the Well-Sequencedness condition check.  If no error is returned
+    # then it returns that it has passed the check, otherwise it returns
+    # the error
 
-        #first condition
-        for i in ca.edges:
-            for j in ca.edges:
-                if i[2] == j[0]:
-                    if j[3] != i[3] and j[4] != i[4] and j[4] != i[3] and i[4] != j[3]:
-
-                        #second condition
-                        for k in ca.edges:
-                            if i[2] != k[2] and k[0] == i[0]:
-                                for h in ca.edges:
-                                    if h[0] == k[2] and h[2] == j[0]:
-                                        if  i[1] == h[1] and j[1] == k[1]:
-                                            return None
-                                return (str(i[0]+"  |"+str(i[1])+"|  "+str(i[2])+"  |"+str(j[1])+"|  "+str(j[2])))
-                        return (str(i[0]+"  |"+str(i[1])+"|  "+str(i[2])+"  |"+str(j[1])+"|  "+str(j[2])))
-        return None
-
-
-    def make_well_sequencedness(self,graph_name):
+    def make_well_sequencedness(self, graph_name):
         ca = self.ca_dict.get(graph_name)
 
-        ret = self.well_sequencedness_conditions(ca)
+        ret = well_sequencedness_conditions(ca)
 
         if ret == None:
             result = ['Verified: Well-sequenced']
@@ -820,11 +313,12 @@ class Controller:
             return [result]
 
 
+    # First it does the well-Sequencedness check and if it
+    # passes it then does the well-Branchedness check
 
-    def make_well_formedness(self,graph_name):
+    def make_well_formedness(self, graph_name):
 
         resultWS = self.make_well_sequencedness(graph_name)
-
 
         if resultWS[0][0] == 'Verified: Well-sequenced':
 
