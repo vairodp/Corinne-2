@@ -1,7 +1,11 @@
 # Corinne
 _Corinne is a tool to manage Choreography Automata (CA) and to verify the Well-Formedness conditions._
 
-![alt text](icons/logo-ico)
+
+
+<p align="center">
+	<img src="https://i.imgur.com/Nc2DMTT.png" alt="logo-Corinne">
+</p>
 
 ### Table of Contents
 
@@ -41,7 +45,7 @@ Once taken one or more files as input, Corinne can apply some functions on it, u
 - TRASFORMATIONS:
 	- Product: a cartesian product of two CA ;
 	- Synchronization: given a CA, it can synchronize two particants of its ;
-	- Projection: given a CA, you can select one participant from it and get the relative CFSM (Communicating-FSA) ;
+	- Projection: given a CA, you can select one participant from it and get the relative CFSM (Communicating-FSA)
 
 - PROPERTIES:
 	- Well-formedness: verify both the "Well-sequencedness" and "Well-branchedness" properties.
@@ -49,7 +53,7 @@ Once taken one or more files as input, Corinne can apply some functions on it, u
 	- Well-branchedness: verify only the "Well-branchedness" property.
 
 <p align="center">
-	<img src="https://imgur.com/eXukg8S" alt="Corinne">
+	<img src="https://i.imgur.com/eXukg8S.png" alt="Corinne">
 </p>
 
 
