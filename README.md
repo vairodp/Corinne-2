@@ -1,11 +1,7 @@
 # Corinne
 _Corinne is a tool to manage Choreography Automata (CA) and to verify the Well-Formedness conditions._
 
-
-
-<p align="center">
-	<img src="https://i.imgur.com/Nc2DMTT.png" alt="logo-Corinne">
-</p>
+<img align="right"  src="https://i.imgur.com/Nc2DMTT.png" alt="logo-Corinne" length = 300 width = 300>
 
 ### Table of Contents
 
