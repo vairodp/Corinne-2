@@ -1,5 +1,6 @@
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 # Corinne
-_Corinne is a tool to manage Choreography Automata (CA) and to verify the Well-Formedness conditions._
+_This project presents an extension and improvement work by Corinne, a tool for reading, composing and projection of the Choreography Automata. These are an emerging model based on the concept of finite state automata mainly used for the top-down description of distributed systems choreographies. In particular, the project focuses on the implementation of the verification of Well-formedness, a fundamental characteristic of a c-automaton in order to ensure structural correctness, free from the typical errors of concurrent programming, such as Deadlocks and Race Conditions._
 
 <img align="right"  src="https://i.imgur.com/Nc2DMTT.png" alt="logo-Corinne" length = 300 width = 300>
 
